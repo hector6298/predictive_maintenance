@@ -6,22 +6,17 @@ import json
 
 # COMMAND ----------
 
+# Widget definition
 dbutils.widgets.text("connectionStringEndPoint", '')
 dbutils.widgets.text("eventHubName", '')
 dbutils.widgets.text("consumerGroup", '')
 dbutils.widgets.text("streamDebugMode", 'True')
 
-dbutils.widget
-
-# COMMAND ----------
-
-streamDebugMode = True
-
-# COMMAND ----------
-
-connectionStringEndPoint = "Endpoint=sb://ihsuprodmwhres025dednamespace.servicebus.windows.net/;SharedAccessKeyName=iothubowner;SharedAccessKey=rkMaaaupaGY/sZ5cYb9Lk/yFy8FGB6+C096jg/DcjEs=;EntityPath=iothub-ehub-telemetry-17003703-f705eeecc7"
-eventHubName = "iothub-ehub-telemetry-17003703-f705eeecc7"
-consumerGroup = "databricksdelta"
+# Vars assignment to arguments
+connectionStringEndPoint = dbutils.widgets.get("connectionStringEndPoint")
+eventHubName = dbutils.widgets.get("eventHubName")
+consumerGroup = dbutils.widgets.get("consumerGroup")
+streamDebugMode = dbutils.widgets.get("streamDebugMode")
 
 # Create the positions
 startingEventPosition = {
@@ -85,12 +80,3 @@ else:
               .format("delta")\
               .partitionBy("Date_Enqueued", "Hour_Enqueued")\
               .table("delta_telemetry_data")
-
-# COMMAND ----------
-
-# MAGIC %sql
-# MAGIC SELECT * FROM debug_telemetry_data
-
-# COMMAND ----------
-
-|
