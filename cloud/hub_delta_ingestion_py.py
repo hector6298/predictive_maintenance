@@ -1,6 +1,8 @@
 # Databricks notebook source
 from pyspark.sql.functions import col, from_json
 from pyspark.sql.types import StructType, DoubleType, IntegerType, StructField
+from pyspark.sql.window import Window
+from pyspark.sql import functions as F
 
 import json
 
@@ -18,6 +20,11 @@ eventHubName = dbutils.widgets.get("eventHubName")
 consumerGroup = dbutils.widgets.get("consumerGroup")
 streamDebugMode = dbutils.widgets.get("streamDebugMode")
 
+if streamDebugMode:
+    outputTable = 'pdm_dev.telemetry_data'
+else:
+    outputTable = 'pdm_prod.telemetry_data'
+    
 # Create the positions
 startingEventPosition = {
   "offset": -1,  
@@ -25,6 +32,11 @@ startingEventPosition = {
   "enqueuedTime": None,   #not in use
   "isInclusive": True
 }
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC ## Event Hubs streaming source definition
 
 # COMMAND ----------
 
@@ -44,6 +56,11 @@ df = spark \
 
 # COMMAND ----------
 
+# MAGIC %md
+# MAGIC ## Parsing of telemetry data
+
+# COMMAND ----------
+
 schema = StructType([
     StructField("messageId", IntegerType(), True),
     StructField("temperature", DoubleType(), True),
@@ -55,6 +72,12 @@ streamDf = df.select(col("enqueuedTime").alias("enqueued_time"),
                      from_json(col("body").cast("string"), schema).alias("telemetry_json"))\
              .select("enqueued_time", "device_id", "telemetry_json.*")
 
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC ## Final format
+
 # COMMAND ----------
 
 streamDf.createOrReplaceTempView("device_telemetry_data")
@@ -62,21 +85,25 @@ streamDf.createOrReplaceTempView("device_telemetry_data")
 # COMMAND ----------
 
 finalDf = spark.sql("""
-    SELECT messageId, DATE(enqueued_time) as date_enqueued, HOUR(enqueued_time) as hour_enqueued, enqueued_time, device_id, temperature, humidity 
+    SELECT messageId as message_id, 
+           DATE(enqueued_time) as date_enqueued, 
+           HOUR(enqueued_time) as hour_enqueued, 
+           enqueued_time, 
+           device_id, 
+           temperature,
+           humidity
     FROM device_telemetry_data
 """)
 
 # COMMAND ----------
 
-if streamDebugMode:
-    finalDf.writeStream\
-           .format("memory")\
-           .queryName("debug_telemetry_data")\
-           .start()   
-else:
-    finalDf.writeStream\
-              .outputMode("append")\
-              .option("checkpointLocation", "/delta/events/_checkpoints/etl-from-json")\
-              .format("delta")\
-              .partitionBy("Date_Enqueued", "Hour_Enqueued")\
-              .table("delta_telemetry_data")
+# MAGIC %md
+# MAGIC ## Telemetry sink
+
+# COMMAND ----------
+
+finalDf.writeStream\
+      .format("delta")\
+      .outputMode("append")\
+      .option("checkpointLocation", f"/delta/events/_checkpoints/{outputTable.split('.')[1]}")\
+      .table(outputTable)
