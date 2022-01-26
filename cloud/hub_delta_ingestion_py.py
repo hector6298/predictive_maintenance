@@ -1,9 +1,8 @@
 # Databricks notebook source
-from pyspark.sql.functions import col, from_json
+from pyspark.sql.functions import col, from_json, window
 from pyspark.sql.types import StructType, DoubleType, IntegerType, StructField
-from pyspark.sql.window import Window
 from pyspark.sql import functions as F
-
+from datetime import datetime
 import json
 
 # COMMAND ----------
@@ -22,8 +21,10 @@ streamDebugMode = dbutils.widgets.get("streamDebugMode")
 
 if streamDebugMode:
     outputTable = 'pdm_dev.telemetry_data'
+    outputTableAgg = 'pdm_dev.telemetry_data_aggregated'
 else:
     outputTable = 'pdm_prod.telemetry_data'
+    outputTableAgg = 'pdm_prod.telemetry_data_aggregated'
     
 # Create the positions
 startingEventPosition = {
@@ -84,7 +85,7 @@ streamDf.createOrReplaceTempView("device_telemetry_data")
 
 # COMMAND ----------
 
-finalDf = spark.sql("""
+streamDf = spark.sql("""
     SELECT messageId as message_id, 
            DATE(enqueued_time) as date_enqueued, 
            HOUR(enqueued_time) as hour_enqueued, 
@@ -102,8 +103,73 @@ finalDf = spark.sql("""
 
 # COMMAND ----------
 
-finalDf.writeStream\
+spark.sparkContext.setLocalProperty("spark.scheduler.pool", "pool1")
+streamDf.writeStream\
       .format("delta")\
       .outputMode("append")\
       .option("checkpointLocation", f"/delta/events/_checkpoints/{outputTable.split('.')[1]}")\
       .table(outputTable)
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC ## Rolling windows (feature extraction)
+
+# COMMAND ----------
+
+aggregations = [
+    F.mean(col("temperature")).alias('mean_temp'),
+    F.stddev(col("temperature")).alias('std_temp'),
+    F.min(col("temperature")).alias('min_temp'),
+    F.max(col("temperature")).alias('max_temp'),
+    F.mean(col("humidity")).alias('mean_humid'),
+    F.stddev(col("humidity")).alias('std_humid'),
+    F.min(col("humidity")).alias('min_humid'),
+    F.max(col("humidity")).alias('max_humid')
+]
+slidingWindows = streamDf.withWatermark("enqueued_time", "2 minutes")\
+                   .groupBy(window("enqueued_time", "2 minutes", "1 minutes"))\
+                   .agg(*aggregations)
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC ## Aggregation format
+
+# COMMAND ----------
+
+slidingWindows.createOrReplaceTempView("telemetry_data_aggs")
+
+# COMMAND ----------
+
+slidingWindows = spark.sql('''
+    SELECT window.start as start_time,
+           window.end as end_time,
+           mean_temp,
+           std_temp,
+           min_temp,
+           max_temp,
+           mean_humid,
+           std_humid,
+           min_humid,
+           max_humid
+   FROM telemetry_data_aggs
+''')
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC ## Aggregated data sink
+
+# COMMAND ----------
+
+spark.sparkContext.setLocalProperty("spark.scheduler.pool", "pool2")
+slidingWindows.writeStream\
+              .format("delta")\
+              .outputMode("append")\
+              .option("checkpointLocation", f"/delta/events/_checkpoints/{outputTable.split('.')[1]}_ckpt")\
+              .table(outputTableAgg)
+
+# COMMAND ----------
+
+display(slidingWindows)
