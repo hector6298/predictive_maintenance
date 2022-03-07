@@ -1,0 +1,3 @@
+azure-iot-device~=2.7.0
+adafruit-circuitpython-dht
+grove.py
