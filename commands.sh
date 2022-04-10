@@ -38,7 +38,7 @@ docker build -t aml/send_telemetry:latest \
 docker tag aml/send_telemetry:latest ${ACR_SERVER}/aml/send_telemetry:latest 
 docker push ${ACR_SERVER}/aml/send_telemetry:latest
 
-
+cd ../../../../..
 python cloud_ml/config_deployment.py \
     --acr-server ${ACR_SERVER} \
     --acr-username ${ACR_USERNAME} \
@@ -47,6 +47,10 @@ python cloud_ml/config_deployment.py \
     --inference-image ${ACR_SERVER}/aml/temp_model:latest 
 
 
-!az iot edge set-modules --device-id $iot_device_id \
-                         --hub-name $iot_hub_name \
-                         --content deployment.json
+$IOT_HUB_ENDPOINT="HostName=telemetry-hub-pdm.azure-devices.net;SharedAccessKeyName=iothubowner;SharedAccessKey=rkMaaaupaGY/sZ5cYb9Lk/yFy8FGB6+C096jg/DcjEs="
+$IOT_DEVICE_ID="raspi"
+$DEPLOYMENT_JSON="C:/Users/mejia/OneDrive/Documents/predictive_maintenance/iot_edge/humid_telemetry/config/deployment.arm32v7.json"
+
+az iot edge set-modules --device-id ${IOT_DEVICE_ID} \
+                         --login ${IOT_HUB_ENDPOINT} \
+                         --content ${DEPLOYMENT_JSON}

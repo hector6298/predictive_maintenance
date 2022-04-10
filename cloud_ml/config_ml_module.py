@@ -51,15 +51,17 @@ def create_model_package(ws,
 
     inference_config = InferenceConfig(entry_script=entry_script,
                                     conda_file=conda_file,
-                                    runtime='python',
-                                    description = "IOT Edge anomaly detection demo")
+                                    runtime="python",
+                                    base_image="arm32v7/python:3.7-slim-buster",
+                                    description="IOT Edge anomaly detection demo")
     print("Finished definining inference configuration")
 
     package = Model.package(ws, 
                             model_list, 
                             inference_config, 
                             generate_dockerfile=True,
-                            image_name=image_name)
+                            image_name=image_name,
+                            image_label="latest")
 
     package.wait_for_creation(show_output=True)
     print("Finished packaging the model as a Docker container")
@@ -109,8 +111,7 @@ def setup_aci_test(ws, model_list, inference_config):
 
 def test_service(service):
     # Generate sample request
-    test_sample = json.dumps({"ambient": { "temperature": 21.17794693, "humidity": 25 },\
-                            "timeCreated": str(datetime.now()) })
+    test_sample = json.dumps({"messageCount": 1, "temperature": 21.17794693, "humidity": 25 })
 
     # transform json string into bytes
     test_sample = bytes(test_sample, encoding = 'utf8')

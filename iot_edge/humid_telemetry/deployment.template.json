@@ -23,7 +23,7 @@
             "type": "docker",
             "settings": {
               "image": "mcr.microsoft.com/azureiotedge-agent:1.2",
-              "createOptions": {}
+              "createOptions": __CREATE_OPTIONS_SYSTEM
             }
           },
           "edgeHub": {
@@ -32,27 +32,7 @@
             "restartPolicy": "always",
             "settings": {
               "image": "mcr.microsoft.com/azureiotedge-hub:1.2",
-              "createOptions": {
-                "HostConfig": {
-                  "PortBindings": {
-                    "5671/tcp": [
-                      {
-                        "HostPort": "5671"
-                      }
-                    ],
-                    "8883/tcp": [
-                      {
-                        "HostPort": "8883"
-                      }
-                    ],
-                    "443/tcp": [
-                      {
-                        "HostPort": "443"
-                      }
-                    ]
-                  }
-                }
-              }
+              "createOptions": __CREATE_OPTIONS_EDGEHUB
             }
           }
         },
@@ -64,16 +44,16 @@
             "restartPolicy": "always",
             "settings": {
               "image": "__REGISTRY_TELEMETRY_IMAGE_LOCATION",
-              "createOptions": "__CREATE_OPTIONS_TELEMETRY"
+              "createOptions": __CREATE_OPTIONS_TELEMETRY
             }
           },
           "classification": {
             "type": "docker",
             "settings": {
                 "image": "__REGISTRY_ML_IMAGE_LOCATION",
-                "createOptions":"__CREATE_OPTIONS_INFERENCE"
+                "createOptions": __CREATE_OPTIONS_INFERENCE
             },
-            "version": "1.0",
+            "version": "latest",
             "status": "running",
             "restartPolicy": "always"
           }

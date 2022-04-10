@@ -16,7 +16,7 @@ def init():
 def run(input_str):
     try:
         input_json = json.loads(input_str)
-        input_df = pandas.DataFrame([[input_json['ambient']['temperature'],input_json['ambient']['humidity']]])
+        input_df = pandas.DataFrame([[input_json['temperature'],input_json['humidity']]])
         pred = model.predict(input_df)
         print("Prediction is ", pred[0])
     except Exception as e:
