@@ -47,7 +47,7 @@ async def run_sample(client):
             msg.message_id = uuid.uuid4()
             msg.correlation_id = "correlation-1234"
 
-            await client.send_message(msg)
+            await client.send_message_to_output(msg, "telemetryOutput")
             print("done sending message #" + str(i))
         except Exception as error:
             # Errors happen fairly often, DHT's are hard to read, just keep going

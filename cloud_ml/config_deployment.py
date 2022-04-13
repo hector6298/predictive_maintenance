@@ -76,9 +76,12 @@ if __name__ == "__main__":
 
     create_options_inference = {
         "HostConfig": {
-            "Runtime":"nvidia",
             "PortBindings": {
-            "5001/tcp": [{"HostPort":"5001"}]
+            "5001/tcp": [
+                {
+                    "HostPort":"5001"
+                }
+            ]
             }
         }
     }

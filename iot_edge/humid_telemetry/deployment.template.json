@@ -64,8 +64,8 @@
       "properties.desired": {
         "schemaVersion": "1.1",
         "routes": {
-          "send_telemetryToclassification": "FROM /messages/modules/send_telemetry/outputs/temperatureOutput INTO BrokeredEndpoint(\"/modules/classification/inputs/amlInput\")",
-          "classificationToIoTHub": "FROM /messages/modules/classification/outputs/amlOutput INTO $upstream"
+          "send_telemetryToclassification": "FROM /messages/modules/send_telemetry/outputs/* INTO BrokeredEndpoint(\"/modules/classification/inputs/telemetryInput\")",
+          "classificationToIoTHub": "FROM /messages/modules/classification/outputs/* INTO $upstream"
         },
         "storeAndForwardConfiguration": {
           "timeToLiveSecs": 7200
