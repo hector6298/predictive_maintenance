@@ -1,0 +1,5 @@
+pandas
+scikit-learn
+azureml-sdk
+azureml-defaults
+azureml-sdk[notebooks]

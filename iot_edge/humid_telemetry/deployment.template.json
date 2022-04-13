@@ -10,10 +10,10 @@
             "minDockerVersion": "v1.25",
             "loggingOptions": "",
             "registryCredentials": {
-              "docker": {
-                "username": "$CONTAINER_REGISTRY_USERNAME_docker",
-                "password": "$CONTAINER_REGISTRY_PASSWORD_docker",
-                "address": "docker.io"
+              "amlregistry": {
+                "username": "__REGISTRY_USER_NAME",
+                "password": "__REGISTRY_PASSWORD",
+                "address": "__REGISTRY_SERVER_NAME"
               }
             }
           }
@@ -23,7 +23,7 @@
             "type": "docker",
             "settings": {
               "image": "mcr.microsoft.com/azureiotedge-agent:1.2",
-              "createOptions": {}
+              "createOptions": __CREATE_OPTIONS_SYSTEM
             }
           },
           "edgeHub": {
@@ -32,27 +32,7 @@
             "restartPolicy": "always",
             "settings": {
               "image": "mcr.microsoft.com/azureiotedge-hub:1.2",
-              "createOptions": {
-                "HostConfig": {
-                  "PortBindings": {
-                    "5671/tcp": [
-                      {
-                        "HostPort": "5671"
-                      }
-                    ],
-                    "8883/tcp": [
-                      {
-                        "HostPort": "8883"
-                      }
-                    ],
-                    "443/tcp": [
-                      {
-                        "HostPort": "443"
-                      }
-                    ]
-                  }
-                }
-              }
+              "createOptions": __CREATE_OPTIONS_EDGEHUB
             }
           }
         },
@@ -63,20 +43,19 @@
             "status": "running",
             "restartPolicy": "always",
             "settings": {
-              "image": "${MODULES.send_telemetry}",
-              "createOptions": {
-                "HostConfig": {
-                  "Privileged": true,
-                  "Devices": [
-                    {
-                        "PathOnHost": "/dev/gpiomem",
-                        "PathInContainer": "/dev/gpiomem",
-                        "CgroupPermissions": "rwm"
-                    }
-                ]
-                }
-              }
+              "image": "__REGISTRY_TELEMETRY_IMAGE_LOCATION",
+              "createOptions": __CREATE_OPTIONS_TELEMETRY
             }
+          },
+          "classification": {
+            "type": "docker",
+            "settings": {
+                "image": "__REGISTRY_ML_IMAGE_LOCATION",
+                "createOptions": __CREATE_OPTIONS_INFERENCE
+            },
+            "version": "latest",
+            "status": "running",
+            "restartPolicy": "always"
           }
         }
       }
@@ -85,8 +64,8 @@
       "properties.desired": {
         "schemaVersion": "1.1",
         "routes": {
-          "send_telemetryToIoTHub": "FROM /messages/modules/send_telemetry/outputs/* INTO $upstream",
-          "sensorTosend_telemetry": "FROM /messages/modules/SimulatedTemperatureSensor/outputs/temperatureOutput INTO BrokeredEndpoint(\"/modules/send_telemetry/inputs/input1\")"
+          "send_telemetryToclassification": "FROM /messages/modules/send_telemetry/outputs/* INTO BrokeredEndpoint(\"/modules/classification/inputs/telemetryInput\")",
+          "classificationToIoTHub": "FROM /messages/modules/classification/outputs/* INTO $upstream"
         },
         "storeAndForwardConfiguration": {
           "timeToLiveSecs": 7200

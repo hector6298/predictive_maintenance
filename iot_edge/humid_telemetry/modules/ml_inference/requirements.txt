@@ -1,0 +1,5 @@
+numpy
+python-multipart
+scikit-learn
+joblib
+azure-iot-device

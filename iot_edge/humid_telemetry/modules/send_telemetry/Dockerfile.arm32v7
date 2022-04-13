@@ -1,12 +1,9 @@
-FROM resin/raspberry-pi-debian:buster
+FROM balenalib/raspberrypi3-debian:bullseye
 
 WORKDIR /app
 
-RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 8B48AD6246925553 7638D0442B90D010 CBF8D6FD518E17E1
-
 ENV DEBIAN_FRONTEND noninteractive
 
-RUN echo "deb http://deb.debian.org/debian jessie main" >> /etc/apt/sources.list
 RUN sudo apt-get update  && sudo apt-get install -y \
     build-essential \
     python3-dev \
@@ -16,13 +13,13 @@ RUN sudo apt-get update  && sudo apt-get install -y \
     zlib1g-dev \
     gcc \
     mono-mcs \ 
+    libgpiod2 \
     python3-rpi.gpio
 
 
 RUN sudo pip3 install --upgrade pip
 COPY requirements.txt ./
 RUN sudo pip3 install -r requirements.txt
-
 
 COPY . .
 
