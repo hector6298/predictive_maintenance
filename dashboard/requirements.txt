@@ -1,0 +1,6 @@
+streamz
+pyviz
+colorcet
+hvplot
+panel
+bokeh
