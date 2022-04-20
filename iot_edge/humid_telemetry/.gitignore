@@ -5,3 +5,4 @@ commands.sh
 .vscode/
 .azureml/
 .devcontainer/
+.ipynb_checkpoints/
