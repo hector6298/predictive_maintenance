@@ -65,7 +65,7 @@
         "schemaVersion": "1.1",
         "routes": {
           "send_telemetryToclassification": "FROM /messages/modules/send_telemetry/outputs/* INTO BrokeredEndpoint(\"/modules/classification/inputs/telemetryInput\")",
-          "classificationToIoTHub": "FROM /messages/modules/classification/outputs/* INTO $upstream"
+          "classificationToIoTHub": "FROM /messages/modules/classification/outputs/upstream_sink INTO $upstream"
         },
         "storeAndForwardConfiguration": {
           "timeToLiveSecs": 7200

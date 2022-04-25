@@ -1,7 +1,3 @@
-# Copyright (c) Microsoft. All rights reserved.
-# Licensed under the MIT license. See LICENSE file in the project root for
-# full license information.
-
 import asyncio
 import sys
 import signal
@@ -11,9 +7,13 @@ import adafruit_dht
 import time
 import uuid
 
+from datetime import datetime
 from azure.iot.device.aio import IoTHubModuleClient
 from azure.iot.device import Message
 from board import D17
+
+date_pattern = "%Y-%m-%d\n%H:%M:%S"
+
 
 # Event indicating client stop
 stop_event = threading.Event()
@@ -25,19 +25,20 @@ def create_client():
 
 
 async def run_sample(client):
-    # Customize this coroutine to do whatever tasks the module initiates
-    # e.g. sending messages
 
     # Send a filled out Message object
     async def send_test_message(i: int):
         try:
+            # Read from the RPi sensor
             temperature = dht_device.temperature
             humidity = dht_device.humidity
 
+            # Build sensor document
             telemetry_json = {
                 "messageCount": i,
                 "humidity": humidity,
                 "temperature": temperature,
+                "timestamp": datetime.now().strftime(date_pattern)
             }
             telemetry_str = json.dumps(telemetry_json)
 
