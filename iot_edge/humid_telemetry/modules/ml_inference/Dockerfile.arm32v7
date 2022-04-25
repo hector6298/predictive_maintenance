@@ -5,7 +5,7 @@ WORKDIR /app
 ENV DEBIAN_FRONTEND=noninteractive
 ENV MODULE_NAME=app 
 
-RUN apt update && apt upgrade
+RUN apt update && apt upgrade -y
 RUN  apt install gfortran libatlas-base-dev libopenblas-dev liblapack-dev -y
 
 RUN apt install -y \

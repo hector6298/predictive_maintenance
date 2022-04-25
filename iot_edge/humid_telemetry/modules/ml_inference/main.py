@@ -1,3 +1,4 @@
+import os
 import sys
 import threading
 import signal
@@ -8,7 +9,7 @@ import traceback
 from joblib import load
 from azure.iot.device import IoTHubModuleClient, Message
 
-# global counters
+# globals
 RECEIVED_MESSAGES = 0
 
 def create_client():
@@ -20,18 +21,20 @@ def create_client():
     def get_prediction_payload(telemetry_sample):
         temp = telemetry_sample['temperature']
         humid = telemetry_sample['humidity']
+        timestamp = telemetry_sample['timestamp']
 
         prediction = clf.predict([[temp, humid]])
         log_proba = clf.predict_proba([[temp, humid]])
         
-        return {"temperature": temp,
+        return {"timestamp": timestamp,
+                "temperature": temp,
                 "humidity": humid,
                 "prediction": int(prediction[0]),
-                "log_proba": float(max(log_proba[0]))}
+                "probability": float(max(log_proba[0]))}
 
     # define function for handling received messages
     def receive_message_handler(message):
-        # NOTE: This function only handles messages sent to "input1".
+        # NOTE: This function only handles messages sent to "telemetryInput".
         # Messages sent to other inputs or to the default will be discarded.
         global RECEIVED_MESSAGES
         if message.input_name == "telemetryInput":
@@ -47,14 +50,13 @@ def create_client():
             except Exception as e:
                 print(e)
                 print(traceback.format_exc())
-                raise
 
             print( "    Data: <<{}>>".format(out_msg.data) )
             print( "    Properties: {}".format(out_msg.custom_properties))
             print( "    Total calls received: {}".format(RECEIVED_MESSAGES))
 
             print("Forwarding message to IoT Hub")
-            client.send_message(message)
+            client.send_message_to_output(out_msg, "upstream_sink")
             print("Message successfully forwarded")
         else:
             print("Message received on unknown input: {}".format(message.input_name))
