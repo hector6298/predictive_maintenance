@@ -6,3 +6,5 @@ commands.sh
 .azureml/
 .devcontainer/
 .ipynb_checkpoints/
+logs/
+__pycache__/

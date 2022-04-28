@@ -109,6 +109,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--model-name', type=str,
                         dest='model_name', help='Name for the model to be registered.')
+    parser.add_argument('--data-path', type=str,
+                        dest='data_path', help='Directory path of the data to be used on modeling.')
     args = parser.parse_args()
 
 
@@ -118,7 +120,7 @@ if __name__ == "__main__":
     experiment_name = 'train-on-remote-vm'
     compute_target_name = 'cpu-cluster'
     trained_model_description = 'My AutoML Model'
-    train_data_filename = 'cloud_ml/sample_data/temperature_data.parquet'
+    train_data_filename = args.data_path
     train_target_path = 'cloud_ml'
     vm_name = "predictive_maintenance_vm"
     vm_username = "pdmvm"

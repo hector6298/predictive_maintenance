@@ -44,11 +44,13 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--model-name', type=str,
                         dest='model_name', help='Name for registered model.')
+    parser.add_argument('--model-path-out', type=str,
+                        dest='model_path_out', help='Output path for the model.')
     args = parser.parse_args()
 
     # Variables
     model_name = args.model_name
-    model_path_out = "C:/Users/mejia/OneDrive/Documents/predictive_maintenance/iot_edge/humid_telemetry/modules/ml_inference/models"
+    model_path_out = args.model_path_out
 
     # Execute tasks
     ws = get_workspace_from_config()

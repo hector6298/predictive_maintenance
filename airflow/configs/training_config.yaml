@@ -1,0 +1,12 @@
+
+notification_email: <email-for-notifications>
+
+service_principal:
+  username_secret: <sp-user>
+  password: <sp-pass>
+  tenant_secret: <tenant>
+
+training:
+  model_name: <name-of-model>
+  data_path: <path-to-train-dataset>
+  model_path_out: <path-for-model-binary>
