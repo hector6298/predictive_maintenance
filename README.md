@@ -1,4 +1,4 @@
-# predictive_maintenance
+# Predictive Maintenance
 
 Predictive maintenance refers to the use of data-driven, proactive maintenance methods that are designed to analyze the condition of equipment and help predict when maintenance should be performed.
 
