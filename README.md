@@ -71,6 +71,37 @@ You should be able to see the UI if you type `localhost:8080` in your browser.
 
 ## Building the required infrastructure
 
+Inside the `airflow` folder, look for the `configs` folder. You will see a file called `infrastructure_config.json` that has the following contents:
+
+```
+{
+  "infrastructure_config": {
+    "notification_email": "<email-for-notifications>",
+    "subscription_id_secret": "<subscription-id>",
+    "resource_group": "<az-resource-group>",
+    "azure_region": "<region>",
+
+    "service_principal": {
+      "username_secret": "<sp-user>",
+      "password": "<sp-pass>",
+      "tenant_secret": "<tenant>"
+    },
+    "aml": {
+      "workspace_name": "<name>"
+    },
+    "iot": {
+      "iothub_name": "<iothub-name>",
+      "iothub_sku": "<sku>",
+      "storage_name": "<storage-account-name>",
+      "container_name": "<storage-container-name>",
+      "storage_endpoint_name_secret": "<name-for-your-endpoint>",
+      "storage_route_name_secret": "<name-for-your-route>"
+    }
+  }
+}
+```
+You should insert values where there are placeholders. Optionally you can change the other parameters, but be mindfull that the aml workspace and IoT Hub are used on the other pipelines.
+
 ## Training the machine learning model 
 
 ## Building and deploying the iot edge modules
