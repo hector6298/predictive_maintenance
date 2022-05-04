@@ -2,8 +2,10 @@ FROM apache/airflow:latest
 
 USER root
 
-RUN sudo apt-get update && \
-    apt-get -y install apt-transport-https \
+ENV PIP_USER false
+
+RUN apt-get update && \
+     apt-get -y install apt-transport-https \
     ca-certificates \
     curl \
     gnupg2 \
@@ -25,20 +27,23 @@ RUN apt-key add /tmp/dkey && \
     "deb [arch=amd64] https://download.docker.com/linux/$(. /etc/os-release; echo "$ID") \
     $(lsb_release -cs) \
     stable"
-    
+
+RUN curl -fsSL https://packages.microsoft.com/config/debian/11/packages-microsoft-prod.deb > packages-microsoft-prod.deb &&\
+    dpkg -i packages-microsoft-prod.deb &&\
+    rm packages-microsoft-prod.deb
+
 RUN apt-get update && \
-    apt-get -y install docker-ce azure-cli
-
-USER airflow
-
-RUN groupadd docker
-
-RUN usermod -aG docker airflow
+    apt-get -y install docker-ce \
+    azure-cli \
+    dotnet-sdk-2.1 \
+    dotnet-runtime-2.1
 
 RUN az upgrade
 
 ADD requirements.txt .
 
-RUN pip3 install --upgrade pip
-RUN pip3 install -r requirements.txt
+RUN pip3 install --no-cache-dir --upgrade pip
+RUN pip3 install --no-cache-dir  -r requirements.txt
 
+
+RUN usermod -aG docker airflow
