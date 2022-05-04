@@ -1,0 +1,28 @@
+
+{
+  "training_config": { 
+    "notification_email": "<email-for-notifications>",
+
+    "service_principal": {
+      "username_secret": "<username>",
+      "password": "<sp_password>",
+      "tenant_secret": "<tenant>",
+      "subscription_id": "<subscription_id>"
+    },
+
+    "aml": {
+      "resource_group": "streaming_pdm",
+      "workspace_name":  "predictive-maintenance-ml"
+    },
+
+    "data_path": "/opt/airflow/cloud_ml/sample_data/",
+    "data_file": "temperature_data.parquet",
+    
+    "model_path_out": "/opt/airflow/iot_edge/humid_telemetry/modules/ml_inference/models/",
+    "model_name": "temp_model.pkl",
+    
+    "training_script": "ml_training.py",
+    "script_path": "/opt/airflow/cloud_ml/scripts_to_submit/"
+  
+  }
+}
