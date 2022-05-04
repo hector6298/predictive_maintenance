@@ -100,7 +100,13 @@ Inside the `airflow` folder, look for the `configs` folder. You will see a file 
   }
 }
 ```
-You should insert values where there are placeholders. Optionally you can change the other parameters, but be mindfull that the aml workspace and IoT Hub are used on the other pipelines.
+You must insert values where there are placeholders. Optionally, you can also change the other parameters, but be mindfull that the aml workspace and IoT Hub are used on the other pipelines.
+
+Next, upload the json file on the Airflow UI under variables:
+
+![image](https://user-images.githubusercontent.com/41920808/166608912-b418a4f2-527b-4844-8fee-b059b78f6545.png)
+
+Run the DAG.
 
 ## Training the machine learning model 
 
