@@ -38,8 +38,9 @@ RUN apt-get update && \
     dotnet-sdk-2.1 \
     dotnet-runtime-2.1
 
-RUN az upgrade
-
+RUN az upgrade &&\
+    az extension add --name ml
+    
 ADD requirements.txt .
 
 RUN pip3 install --no-cache-dir --upgrade pip

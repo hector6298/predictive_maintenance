@@ -30,16 +30,46 @@ with DAG(**dag_args) as dag:
     )
 
     t1 = BashOperator(
-        task_id='config_aml_workspace',
-        bash_command="""python airflow/cloud_ml/config_workspace.py \
-                                --subscription-id {{ var.json.infrastructure_config.subscription_id_secret }} \
-                                --resource-group {{ var.json.infrastructure_config.resource_group }} \
-                                --azure-region  {{ var.json.infrastructure_config.azure_region }} \
-                                --aml-workspace  {{ var.json.infrastructure_config.aml.workspace_name }}
+        task_id='create_acr',
+        bash_command="""az acr create --resource-group {{ var.json.infrastructure_config.resource_group }} \
+                                      --name {{ var.json.infrastructure_config.acr.name }} \
+                                      --sku {{ var.json.infrastructure_config.acr.sku }} \
+                                      --location {{ var.json.infrastructure_config.azure_region }}
         """
+    )
+    
+    t1_1 = BashOperator(
+        task_id='get_acr_id',
+        bash_command="""echo $(az acr show --name {{ var.json.infrastructure_config.acr.name }} \
+                                    --resource-group {{ var.json.infrastructure_config.resource_group }} \
+                                    --query id \
+                                    --output tsv)
+        """,
+        do_xcom_push=True
     )
 
     t2 = BashOperator(
+        task_id="create_aml_workspace",
+        bash_command="""az ml workspace create --name {{ var.json.infrastructure_config.aml.workspace_name }} \
+                                          --resource-group {{ var.json.infrastructure_config.resource_group }} \
+                                          --location {{ var.json.infrastructure_config.azure_region }} \
+                                          --contrainer-registry {{ ti.xcom_pull(task_ids='get_acr_id') }}
+        """
+    )
+
+    t3 = BashOperator(
+        task_id="create_aml_compute",
+        bash_command="""az ml compute create --name {{ var.json.infrastructure_config.aml.compute.name }} \
+                                             --workspace-name {{ var.json.infrastructure_config.aml.workspace_name }} \
+                                             --resource-group {{ var.json.infrastructure_config.resource_group }} \
+                                             --max-instances {{ var.json.infrastructure_config.aml.compute.max }} \
+                                             --min-instances {{ var.json.infrastructure_config.aml.compute.min }} \
+                                             --size {{ var.json.infrastructure_config.aml.compute.node_type }}
+        """
+    ),
+
+
+    t4 = BashOperator(
         task_id='config_iot_workspace',
         bash_command="""az iot hub create --name {{ var.json.infrastructure_config.iot.iothub_name }} \
                                           --resource-group {{ var.json.infrastructure_config.resource_group }} \
@@ -48,7 +78,7 @@ with DAG(**dag_args) as dag:
         """
     )
 
-    t3 = BashOperator(
+    t5 = BashOperator(
         task_id='create_storage_account',
         bash_command="""az storage account create \
                                         --name {{ var.json.infrastructure_config.iot.storage_name }} \
@@ -59,7 +89,7 @@ with DAG(**dag_args) as dag:
         """
     )
 
-    t4 = BashOperator(
+    t6 = BashOperator(
         task_id='get_storage_conn',
         bash_command="""echo $(az storage account show-connection-string \
                                                     --name {{ var.json.infrastructure_config.iot.storage_name }} \
@@ -69,7 +99,7 @@ with DAG(**dag_args) as dag:
         do_xcom_push=True
     )
 
-    t5 = BashOperator(
+    t7 = BashOperator(
         task_id='create_storage_container',
         bash_command="""az storage container create --name {{ var.json.infrastructure_config.iot.container_name }} \
                                                     --account-name {{ var.json.infrastructure_config.iot.storage_name }} \
@@ -77,7 +107,7 @@ with DAG(**dag_args) as dag:
         """                     
     )
 
-    t6 = BashOperator(
+    t8 = BashOperator(
         task_id='create_routing_endpoint',
         bash_command="""az iot hub routing-endpoint create \
                             --connection-string {{ ti.xcom_pull(task_ids='get_storage_conn') }} \
@@ -92,7 +122,7 @@ with DAG(**dag_args) as dag:
         """
     )
 
-    t7 = BashOperator(
+    t9 = BashOperator(
         task_id='create_storage_route',
         bash_command="""az iot hub route create \
                             --name {{ var.json.infrastructure_config.iot.storage_route_name_secret }} \
@@ -105,4 +135,5 @@ with DAG(**dag_args) as dag:
     )
 
 
-t0 >> [t1,t2, t3] >> t4 >> t5 >> t6 >> t7
+t0 >> t1 >> t1_1 >> t2 >> t3
+[t4, t5] >> t6 >> t7 >> t8 >> t9
