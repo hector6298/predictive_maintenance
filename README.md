@@ -1,4 +1,4 @@
-# Predictive Maintenance
+# End-to-end iot data generation to real-time dashboard
 
 ## Overview
 
@@ -19,7 +19,7 @@ After setup, the project is designed so that the IoT Edge device produces data f
 The design diagrams and documentation are also available on the wiki (work is still in progress).
 
 
-## Preliminary steps
+## Preliminary steps on the cloud
 
 This repository was built in a way that infrastructure is created for you using and apache airflow DAG. However there are some manual steps that are currently not automated. First, you should have a Microsoft Azure Account and a valid subscription. If you don't have, click [here](https://signup.azure.com/) to sign up. After that, you should install the [azure cli client](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli-linux?pivots=apt).
 
@@ -146,10 +146,52 @@ After the variables are all set, you can now run the pipelines in the following 
 
 The pipelines were designed to be independent. For a given resource group, you should only run the infrastructure_dag once. However, the other pipelines (2 and 3) should be executed whenever a new ML training must be performed.
 
+On the Airflow UI go to DAGs tab
+
+![image](https://user-images.githubusercontent.com/41920808/166960633-a5d45a0c-c2ec-4f44-96b5-91987adc350a.png)
+
+Select the desired DAG
+
+![image](https://user-images.githubusercontent.com/41920808/166960712-b56d7576-816f-4c12-a241-8fe1466b5a7b.png)
+
+and hit the play button. The pipelines here are not meant to run periodically. They will only run manually.
+
 ## Connecting the IoT Edge device
+
+For this example, a Raspberry Pi 3b+ is isued along with a DHT sensor that will produce the data. First, you need to setup the device by:
+
+- Installing debian for raspberry Pi 
+- Creating the device identity on IoT Hub
+- Getting the device connection string 
+- Installing the IoT Edge Runtime using the connection string
+ 
+You can follow this document on how to do all of that.
+
+![image](https://user-images.githubusercontent.com/41920808/166963692-52212897-76f3-486f-b4ec-9892a23efd25.png)
+
 
 ## Initializing the real-time dashboard
 
+From the root of the repository go to the `dashboard` folder:
+
+```
+cd dashboard
+```
+Install all the requirements:
+
+```
+pip3 install -r -requirements.txt
+```
+and run the panel server:
+
+```
+panel serve --show dashboard\bokeh_dashboard.py \
+            --args --iothub-conn-str <iothub-builtin-endpoin> \
+                   --iothub-consumer-group <iothub-consumer-group> \
+                   --iothub-name <iothub-compatible-name>
+```
+
+Wait for the server to be ready and then, on your browser, go to `localhost:5050`. See the magic yourself. A dashboard should appear with real-time telemetry updates.
 
 ## Todo
 
