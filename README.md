@@ -77,7 +77,7 @@ docker-compose up
 
 You should be able to see the UI if you type `localhost:8080` in your browser.
 
-## Executing the pipelines
+## Executing the infrastructure pipeline
 
 Take a look at the `airflow` folder:
 
@@ -134,23 +134,17 @@ Once the json files are updated, go to the airflow UI in your browser. In the "A
 
 ![image](https://user-images.githubusercontent.com/41920808/166608912-b418a4f2-527b-4844-8fee-b059b78f6545.png)
 
-Then upload the files one by one.
+Then upload the infrastructure configuration file.
 
-### 3. Run the DAGs
+### 3. Run the DAG
 
-After the variables are all set, you can now run the pipelines in the following order:
+After the variables are all set, you can now run the pipeline. The three pipelines were designed to be independent to execute them when needed. However, for a given resource group, you should only run the infrastructure_dag once. The other pipelines (2 and 3) should be executed whenever a new ML training must be performed.
 
-1. infrastructure_dag
-2. training_dag
-3. iotedge_dag
-
-The pipelines were designed to be independent. For a given resource group, you should only run the infrastructure_dag once. However, the other pipelines (2 and 3) should be executed whenever a new ML training must be performed.
-
-On the Airflow UI go to DAGs tab
+On the Airflow UI go to DAGs tab:
 
 ![image](https://user-images.githubusercontent.com/41920808/166960633-a5d45a0c-c2ec-4f44-96b5-91987adc350a.png)
 
-Select the desired DAG
+Select the `infrastructure_dag` DAG:
 
 ![image](https://user-images.githubusercontent.com/41920808/166960712-b56d7576-816f-4c12-a241-8fe1466b5a7b.png)
 
@@ -168,6 +162,20 @@ For this example, a Raspberry Pi 3b+ is isued along with a DHT sensor that will 
 You can follow this document on how to do all of that.
 
 ![image](https://user-images.githubusercontent.com/41920808/166963692-52212897-76f3-486f-b4ec-9892a23efd25.png)
+
+For your particular pin configuration, you will have to go to the folder where the main script of the telemetry module is:
+
+```
+cd iot_edge/humid_telemetry/modules/send_telemetry
+```
+On your editor, change the imported pin to the one that you are particularly using. For instance, I am using `D17`:
+
+```
+from board import D17
+```
+then, save the script.
+
+## Training the ML model and deploying the edge modules
 
 
 ## Initializing the real-time dashboard
