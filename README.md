@@ -14,7 +14,7 @@ This repository holds the neccessary components to:
 
 After setup, the project is designed so that the IoT Edge device produces data from sensor readings, then uses its machine learning module to predict anomalies and forwards the messages to IoT Hub. From IoT hub, these messages are consumed by an even hub object on the visualization server to build a real time dashboard. The concept of this project can be visualized as follows:
 
-<img src="https://user-images.githubusercontent.com/41920808/166858148-4807cecd-23bb-4dce-ba81-e650b06aa793.png" width="300" height="300">
+<img src="https://user-images.githubusercontent.com/41920808/166858148-4807cecd-23bb-4dce-ba81-e650b06aa793.png" width="800" height="400">
 
 The design diagrams and documentation are also available on the wiki (work is still in progress).
 
@@ -161,7 +161,7 @@ For this example, a Raspberry Pi 3b+ is isued along with a DHT sensor that will 
  
 You can follow this document on how to do all of that.
 
-![image](https://user-images.githubusercontent.com/41920808/166963692-52212897-76f3-486f-b4ec-9892a23efd25.png)
+<img src="https://user-images.githubusercontent.com/41920808/166963692-52212897-76f3-486f-b4ec-9892a23efd25.png" width="450" height="350">
 
 For your particular pin configuration, you will have to go to the folder where the main script of the telemetry module is:
 
