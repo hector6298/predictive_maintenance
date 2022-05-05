@@ -19,21 +19,15 @@ After setup, the project is designed so that the IoT Edge device produces data f
 The design diagrams and documentation are also available on the wiki (work is still in progress).
 
 
-## Preliminaries
+## Preliminary steps
 
-This repository was built in a way that infrastructure is created for you using and apache airflow DAG. However there are some manual steps that are currently not automated.
+This repository was built in a way that infrastructure is created for you using and apache airflow DAG. However there are some manual steps that are currently not automated. First, you should have a Microsoft Azure Account and a valid subscription. If you don't have, click [here](https://signup.azure.com/) to sign up. After that, you should install the [azure cli client](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli-linux?pivots=apt).
 
-### Creating Azure account and installing CLI
-First you should have a Microsoft Azure Account and a valid subscription. If you don't have, click [here](https://signup.azure.com/) to sign up. After that, you should install the [azure cli client](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli-linux?pivots=apt).
-
-### Creating a resource group
 Now, create a resource group with a name of your preference (ex: "predictive_maintenance_rg"):
 
 ```
 az group create -l westus2 -n predictive_maintenance_rg
 ```
-
-### Creating a service principal
 
 Using that resource group and your subscription ID, create a service principal. This will allow the infrastructure pipelines to log into azure without interacting with the browser.
 
@@ -57,11 +51,14 @@ Feel free to search about the architecture design of the three pipelines on the 
 ```
 cd airflow
 ```
+
 In the `docker-compose.yaml` file look for these lines:
+
 ```
   - ../cloud_ml:/opt/airflow/cloud_ml
   - ../iot_edge:/opt/airflow/iot_edge
 ```
+
 These are directory mappings and will be mounted into the docker containers. `cloud_ml` contains script for setting up infrastructure and ML training on the cloud, while `iot_edge` contain dockerfiles, and iot edge modules to build the edge components. They are essential to setup the whole project. 
 
 After that you will see a `Dockerfile` in the airflow folder. It starts from the latest airflow image and installs additional required libraries and packages. Some of them being the Docker client, which airflow will use to build docker images (yes inside the docker container but it actually uses the host system for the build process) and the azure cli to set-up cloud resources. 
@@ -77,6 +74,7 @@ And initialize Airflow:
 ```
 docker-compose up
 ```
+
 You should be able to see the UI if you type `localhost:8080` in your browser.
 
 ## Executing the pipelines
