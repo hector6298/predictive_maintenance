@@ -1,5 +1,5 @@
 # End-to-end iot data generation to real-time dashboard
-
+**Note:** Please read the whole readme to know how to setup the whole project. **This is still a work in progress**.
 ## Overview
 
 Predictive maintenance refers to the use of data-driven, proactive maintenance methods that are designed to analyze the condition of equipment and help predict when maintenance should be performed.
