@@ -23,6 +23,7 @@ The design diagrams and documentation are also available on the wiki (work is st
 
 This repository was built in a way that infrastructure is created for you using and apache airflow DAG. However there are some manual steps that are currently not automated.
 
+## Creating Azure account and installing CLI
 First you should have a Microsoft Azure Account and a valid subscription. If you don't have, click [here](https://signup.azure.com/) to sign up. After that, you should install the [azure cli client](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli-linux?pivots=apt).
 
 ### Creating a resource group
