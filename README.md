@@ -79,11 +79,30 @@ docker-compose up
 ```
 You should be able to see the UI if you type `localhost:8080` in your browser.
 
-## Building the required infrastructure
+## Executing the pipelines
 
-Inside the `airflow` folder, look for the `configs` folder. You will see a file called `infrastructure_config.json` that has the following contents:
+Take a look at the `airflow` folder:
 
 ```
+airflow/
+    configs/
+        infrastructure_config.json # Configuration variables for infrastructure provisioning
+        iotedge_config.json        # Configuration variables for iotedge modules building and deployment
+        training_config.json       # Configuration variables for cloud ML training
+    dags/
+        infrastructure_dag.py      # Pipeline specification for infrastructure provisioning
+        iotedge_dag.py             # Pipeline specification for iotedge modules building and deployment
+        training_dag.py            # Pipeline specification for cloud ML training
+    logs/
+    plugins/
+```
+You can see that there are configuration `.json` files and airflow DAGs `.py` files. The configuration files are meant to be uploaded to airflow to serve as variables that can be retrieved by the DAGs for their execution. Each DAG is parameterized should you need to create another set of resources.
+
+### 1. Setup the json files
+
+You must insert values where there are placeholders. Optionally, you can also change the other parameters, but be mindfull that the aml workspace and IoT Hub are used on the other pipelines. This is an example of a configuration file:
+
+```json
 {
   "infrastructure_config": {
     "notification_email": "<email-for-notifications>",
@@ -110,19 +129,28 @@ Inside the `airflow` folder, look for the `configs` folder. You will see a file 
   }
 }
 ```
-You must insert values where there are placeholders. Optionally, you can also change the other parameters, but be mindfull that the aml workspace and IoT Hub are used on the other pipelines.
 
-Next, upload the json file on the Airflow UI under variables:
+### 2. Upload the json files
+
+Once the json files are updated, go to the airflow UI in your browser. In the "Admin" tab click on "Variables":
 
 ![image](https://user-images.githubusercontent.com/41920808/166608912-b418a4f2-527b-4844-8fee-b059b78f6545.png)
 
-Run the DAG.
+Then upload the files one by one.
 
-## Training the machine learning model 
+### 3. Run the DAGs
 
-## Building and deploying the iot edge modules
+After the variables are all set, you can now run the pipelines in the following order:
 
-## Initializing the realt-time dashboard
+1. infrastructure_dag
+2. training_dag
+3. iotedge_dag
+
+The pipelines were designed to be independent. For a given resource group, you should only run the infrastructure_dag once. However, the other pipelines (2 and 3) should be executed whenever a new ML training must be performed.
+
+## Connecting the IoT Edge device
+
+## Initializing the real-time dashboard
 
 
 ## Todo
