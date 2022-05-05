@@ -39,7 +39,7 @@ az ad sp create-for-rbac --name sp_predictive_maintenance \
 
 now save the `username`, `password` and `tenant` fields as these will allow us to login using the CLI.
 
-## Setting up and initializing Airflow
+## Setting up Airflow
 
 There are three pipelines that were created using apache airflow:
 - Infrastructure setup
