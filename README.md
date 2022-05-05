@@ -14,7 +14,7 @@ This repository holds the neccessary components to:
 
 After setup, the project is designed so that the IoT Edge device produces data from sensor readings, then uses its machine learning module to predict anomalies and forwards the messages to IoT Hub. From IoT hub, these messages are consumed by an even hub object on the visualization server to build a real time dashboard. The concept of this project can be visualized as follows:
 
-![IoT to viz](https://user-images.githubusercontent.com/41920808/166858148-4807cecd-23bb-4dce-ba81-e650b06aa793.png)
+<img src="https://user-images.githubusercontent.com/41920808/166858148-4807cecd-23bb-4dce-ba81-e650b06aa793.png" width="300" height="300">
 
 The design diagrams and documentation are also available on the wiki (work is still in progress).
 
