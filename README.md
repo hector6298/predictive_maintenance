@@ -1,4 +1,5 @@
-# End-to-end iot data generation to real-time dashboard
+# From IoT data generation to real-time dashboard
+### Predictive Maintenance
 **Note:** Please read the whole readme to know how to setup the whole project. **This is still a work in progress**.
 ## Overview
 
