@@ -24,21 +24,45 @@ The design diagrams and documentation are also available on the wiki (work is st
 
 This repository was built in a way that infrastructure is created for you using and apache airflow DAG. However there are some manual steps that are currently not automated. First, you should have a Microsoft Azure Account and a valid subscription. If you don't have, click [here](https://signup.azure.com/) to sign up. After that, you should install the [azure cli client](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli-linux?pivots=apt).
 
+Sign in using the CLI:
+
+```
+az login
+```
+
 Now, create a resource group with a name of your preference (ex: "predictive_maintenance_rg"):
 
 ```
 az group create -l westus2 -n predictive_maintenance_rg
 ```
 
-Using that resource group and your subscription ID, create a service principal. This will allow the infrastructure pipelines to log into azure without interacting with the browser.
+Then, you have to retrieve the ID of the resource group using:
+
+```
+RG_ID=$(az group show --name predictive_maintenance_rg --query id --output tsv)
+```
+
+Create a service principal. This will allow the infrastructure pipelines to log into azure without interacting with the browser.
 
 ```
 az ad sp create-for-rbac --name sp_predictive_maintenance \
                          --role owner \
-                         --scopes /subscriptions/mySubscriptionID/resourceGroups/streaming_pdm
+                         --scopes $RG_ID
 ```
 
-now save the `username`, `password` and `tenant` fields as these will allow us to login using the CLI.
+The output should be something like:
+
+```
+{
+  "appId": <service-principal-app-id>,
+  "displayName": "sp_predictive_maintenance",
+  "password": <service-principal-password>,
+  "tenant": <tenant>
+}
+
+```
+
+You must save the `appId`, `password` and `tenant` fields as these will allow us to login using the CLI.
 
 ## Setting up Airflow
 
