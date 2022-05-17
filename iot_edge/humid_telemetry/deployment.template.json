@@ -38,7 +38,7 @@
         },
         "modules": {
           "send_telemetry": {
-            "version": "1.2",
+            "version": "__TELEMETRY_MODULE_VERSION",
             "type": "docker",
             "status": "running",
             "restartPolicy": "always",
@@ -53,7 +53,7 @@
                 "image": "__REGISTRY_ML_IMAGE_LOCATION",
                 "createOptions": __CREATE_OPTIONS_INFERENCE
             },
-            "version": "latest",
+            "version": "__CLASSIFICATION_MODULE_VERSION",
             "status": "running",
             "restartPolicy": "always"
           }

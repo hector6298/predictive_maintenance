@@ -1,0 +1,36 @@
+{
+  "iotedge_config":{
+    "notification_email": "<email-for-notifications>",
+    "device_id": "raspi",
+    "hub_endpoint": "<iot_hub_connection_string>",
+
+    "service_principal": {
+      "username_secret": "<username>",
+      "password": "<sp_password>",
+      "tenant_secret": "<tenant>"
+    },
+
+    "send_telemetry": {
+      "image_version": 1.3,
+      "module_version": 2,
+      "build_path": "/opt/airflow/iot_edge/humid_telemetry/modules/send_telemetry/"
+    },
+
+    "temp_model": {
+      "image_version": 1.3,
+      "module_version": 2,
+      "build_path": "/opt/airflow/iot_edge/humid_telemetry/modules/ml_inference/"
+    },
+
+    "acr": {
+      "server": "<acr_server>",
+      "username_secret": "<acr_username>",
+      "password": "<acr_password>"
+    },
+
+    "deployment": {
+      "input_template": "/opt/airflow/iot_edge/humid_telemetry/deployment.template.json",
+      "output_deployment": "/opt/airflow/iot_edge/humid_telemetry/config/deployment.arm32v7.json"
+    }
+  }
+}

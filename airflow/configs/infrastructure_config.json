@@ -1,0 +1,45 @@
+{
+  "infrastructure_config": {
+    "notification_email": "<email-for-notifications>",
+    "subscription_id_secret": "<subscription-id>",
+    "resource_group": "<az-resource-group>",
+    "azure_region": "<region>",
+
+    "service_principal": {
+      "username_secret": "<sp-user>",
+      "password": "<sp-pass>",
+      "tenant_secret": "<tenant>"
+    },
+
+    "acr":{
+      "name": "pdmcontainerregistry",
+      "sku": "Basic"
+    },
+
+    "aml": {
+      "workspace_name": "pdmmachinelearning",
+      "compute": {
+        "name": "pdmmlcompute",
+        "min": 0,
+        "max": 4,
+        "node_type": "Standard_DS2_v2"
+      }
+    },
+
+    "iot": {
+      "hub":{
+        "name": "pdmiothub",
+        "sku": "S1"
+      },
+      "storage":{
+        "name": "<unique-storage-name>",
+        "sku": "Standard_RAGRS",
+        "container_name": "pdmstoragecontainer",
+        "kind": "StorageV2",
+        "access_tier": "Hot"
+      },
+      "storage_endpoint_name_secret": "pdmstorageendpoint",
+      "storage_route_name_secret": "pdmstorageroute"
+    }
+  }
+}
