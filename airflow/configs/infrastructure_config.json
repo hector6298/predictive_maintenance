@@ -10,16 +10,36 @@
       "password": "<sp-pass>",
       "tenant_secret": "<tenant>"
     },
-    "aml": {
-      "workspace_name": "<name>"
+
+    "acr":{
+      "name": "pdmcontainerregistry",
+      "sku": "Basic"
     },
+
+    "aml": {
+      "workspace_name": "pdmmachinelearning",
+      "compute": {
+        "name": "pdmmlcompute",
+        "min": 0,
+        "max": 4,
+        "node_type": "Standard_DS2_v2"
+      }
+    },
+
     "iot": {
-      "iothub_name": "<iothub-name>",
-      "iothub_sku": "<sku>",
-      "storage_name": "<storage-account-name>",
-      "container_name": "<storage-container-name>",
-      "storage_endpoint_name_secret": "<name-for-your-endpoint>",
-      "storage_route_name_secret": "<name-for-your-route>"
+      "hub":{
+        "name": "pdmiothub",
+        "sku": "S1"
+      },
+      "storage":{
+        "name": "<unique-storage-name>",
+        "sku": "Standard_RAGRS",
+        "container_name": "pdmstoragecontainer",
+        "kind": "StorageV2",
+        "access_tier": "Hot"
+      },
+      "storage_endpoint_name_secret": "pdmstorageendpoint",
+      "storage_route_name_secret": "pdmstorageroute"
     }
   }
 }

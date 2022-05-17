@@ -39,7 +39,8 @@ RUN apt-get update && \
     dotnet-runtime-2.1
 
 RUN az upgrade &&\
-    az extension add --name ml
+    az extension add --name ml &&\
+    az extension add --name azure-iot
     
 ADD requirements.txt .
 
