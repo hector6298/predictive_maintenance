@@ -88,10 +88,6 @@ def message_handler(partition_context, event):
     
     RECEIVED_MESSAGES += 1
 
-    if not threading.main_thread().is_alive():
-        client.close()
-        sys.exit(0)
-
     logger.info("Received event from partition {}".format(partition_context.partition_id))
     partition_context.update_checkpoint(event)
 
